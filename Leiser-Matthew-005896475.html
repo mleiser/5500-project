@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<!--
+			Matthew Leiser
+			COSC 4500
+			Intro Tech Skills Demo
+			https://mleiser.github.io/5500-project/Leiser-Matthew-005896475.html
+			Done entirely in Vim
+	  	-->
 		<meta charset="utf-8">
 		<title>Intro Tech Skills Demo</title>
 		<script type="text/javascript" src="d3.js">
@@ -10,12 +17,12 @@
 		<script type="text/javascript">
 			var x = Array(10);
 			var y = Array(10);
-			
-			var margin = {top: 30, right: 30, bottom: 50, left: 70};
+
 			var w = 500;
 			var h = 500;
 			var padding = 40;
 			
+			//Random Array Generator
 			var i;
 			for (i = 0; i < x.length; i++) {
 				x[i] = Math.round((Math.random() * 9) + 1);
@@ -31,7 +38,7 @@
 				coordinates[i] = new Array(x[i], y[i]);	
 			}
 
-			
+			//Calculates the Mean
 			function mean(numbers) {
 				var total = 0, i;
 				for (i = 0; i < numbers.length; i++) {
@@ -39,7 +46,8 @@
 				}
 				return total / numbers.length;
 			}
-
+			
+	  		//Calculates the Median
 			function median(numbers) {
 				var median = 0; 
 				var numsLen = numbers.length;
@@ -55,7 +63,8 @@
 
 				return median;
 			}
-
+			
+			//Calculates the mode
 			function mode(numbers) {
 				var numMapping = {};
 				var greatestFreq = 0;
@@ -70,7 +79,8 @@
 				});
 				return mode;
 			}
-
+			
+	  		//Calculates the standard deviation
 			function standardDeviation(numbers) {
 				var avg = mean(numbers);
 
@@ -87,6 +97,7 @@
 				return stdDev;
 			}
 			
+			//Sets the svg dimensions
 			var svg = d3.select("body")
 					.append("svg")
 					.attr("width", w)
@@ -96,6 +107,13 @@
 			var xScale = d3.scaleLinear().domain([0, 10]).range([padding, w - padding]);
 			var yScale = d3.scaleLinear().domain([0, 10]).range([h - padding, padding]);
 			
+			//Creates the tooltip shell
+			var tooltip = d3.select("body")
+					.append("div")
+					.attr("class", "tooltip")
+					.style("opacity", 0);
+			
+			//Creates and adds the xAxis
 			var xAxis = d3.axisBottom(xScale)
 	  				.tickValues([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 	  		svg.append("g")
@@ -108,6 +126,7 @@
 				.style("text-anchor", "middle")
 				.text("# of Programmers in 10 Classes");
 			
+			//Creates and adds the yAxis
 			var yAxis = d3.axisLeft(yScale)
 	  				.tickValues([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);;
 			
@@ -123,7 +142,8 @@
 				.attr("dy", "1em")
 				.style("text-anchor", "middle")
 				.text("Hours Spent Coding per Night");
-
+			
+			//Creates the points on the graph and adds the tooltips about them
 			svg.selectAll("circle")
 				.data(coordinates)
 				.enter()
@@ -135,11 +155,21 @@
 					return yScale(d[1]);
 				})
 				.attr("r", 5)
-				.append("svg:title")
-				.text(function(d) {
-					return "(" + d[0] + ", " + d[1] + ")";
+				.on("mouseover", function(d) {
+					tooltip.transition()
+						.duration(1)
+						.style("opacity", 1);
+					tooltip.text("(" + d[0] + ", " + d[1] + ")")
+						.style("right", (d3.event.pageX -10) + "px")
+						.style("top", (d3.event.pageY - 50) + "px");
+				})
+				.on("mouseout", function(d) {
+					tooltip.transition()
+						.duration(1)
+						.style("opacity", 0);
 				});
 			
+			//Adds the mean, median, mode, and sd of the data
 			d3.select("body")
 				.append("p")
 				.html("# of Programmers in 10 Class:" + "<br/>" + "<span style='padding-left:3em'>" + 
@@ -154,11 +184,6 @@
 					"Median: " + median(y) + "<br/>" + "<span style='padding-left:3em'>" +
 					"Mode: " + mode(y) + "<br/>" + "<span style='padding-left:3em'>" + 
 					"SD: " + standardDeviation(y));
-	  		
-	  		d3.select("body")
-	  			.append("a")
-	  			.attr("href", "")
-	  			.html("Github Link");
 		</script>
 	</BODY>
 </html>
